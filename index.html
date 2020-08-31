@@ -234,27 +234,23 @@
 
             let toggleBox =  $('#panel-box');
             let togglePyramid =  $('#panel-pyramid');
-            let toggleSphere =  $('#panel-sphere');
+            let toggleSphere =  $('#panel-sphere');                  
+                        
+            toggleBox.on('click', function(){
+              
+              toggleGeo = boxGeo;
+            });
 
-            function boxHandler(){
-              toggleGeo = `${boxGeo}`;
-            }
-            console.log(toggleGeo);
+            togglePyramid.on('click', function(){
+              
+              toggleGeo = pyramidGeo;
+            });
 
-            function pyramidHandler(){
-              toggleGeo = `${pyramidGeo}`;
-            }
-            console.log(toggleGeo);
-
-            function sphereHandler(){
-              toggleGeo = `${sphereGeo}`;
-            }
-            console.log(toggleGeo)
-
+            toggleSphere.on('click', function(){
+              
+              toggleGeo = sphereGeo;
+            });
             
-            toggleBox.on('click', boxHandler);
-            togglePyramid.on('click', pyramidHandler);
-            toggleSphere.on('click', sphereHandler);
                 
             
             init();
