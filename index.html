@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>three.js webgl - interactive - voxel painter</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+
+    <style>
+      body {
+        background: #777;
+        padding: 0;
+        margin: 0;
+        font-weight: bold;
+        overflow: hidden;
+      }
+      
+      .app {
+        position: relative;
+      }
+
+      .objects_panel {
+        position: absolute;
+        background-color: black;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        width: 120px;
+        align-items: center;
+        justify-content: space-around;
+      }
+      .objects_panel-block{
+        width: 60px;
+        height: 60px;
+      }
+      .objects_panel-item {
+        width: 60px;
+        height: 60px;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    
+    <div class="objects_panel">
+      <div class="objects_panel-item" id="panel-box" >
+        <a href="">
+          <svg
+            version="1.1"
+            id="Capa_1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            x="60px"
+            y="60px"
+            viewBox="0 0 488.004 488.004"
+            style="enable-background: new 0 0 488.004 488.004"
+            xml:space="preserve"
+          >
+            <polygon
+              style="fill: #61dbdb"
+              points="476.002,104.004 244.002,8.004 12.002,104.004 244.002,200.004 "
+            />
+            <polygon
+              style="fill: #ea7e73"
+              points="12.002,104.004 12.002,384.004 244.002,480.004 244.002,200.004 "
+            />
+            <polygon
+              style="fill: #efc062"
+              points="244.002,200.004 244.002,480.004 476.002,384.004 476.002,104.004 "
+            />
+            <path
+              style="fill: #122333"
+              d="M483.674,101.836c-0.064-0.232-0.168-0.44-0.256-0.656c-0.176-0.456-0.368-0.896-0.624-1.312  c-0.144-0.232-0.296-0.44-0.464-0.656c-0.272-0.368-0.576-0.704-0.92-1.016c-0.2-0.192-0.4-0.368-0.624-0.536  c-0.128-0.096-0.224-0.216-0.352-0.304c-0.296-0.2-0.624-0.312-0.936-0.472c-0.16-0.08-0.28-0.2-0.448-0.272l-232-96  c-1.968-0.816-4.16-0.816-6.128,0l-232,96c-0.168,0.072-0.296,0.192-0.456,0.272c-0.312,0.152-0.632,0.272-0.92,0.464  c-0.128,0.088-0.224,0.208-0.352,0.304c-0.224,0.168-0.416,0.352-0.616,0.536c-0.336,0.312-0.64,0.648-0.92,1.016  c-0.168,0.216-0.32,0.424-0.464,0.656c-0.256,0.416-0.448,0.856-0.624,1.312c-0.088,0.224-0.192,0.424-0.256,0.656  c-0.184,0.704-0.312,1.432-0.312,2.176v280c0,3.24,1.952,6.16,4.936,7.392l232,96c0.104,0.04,0.216,0.024,0.32,0.064  c0.888,0.328,1.8,0.544,2.744,0.544s1.856-0.216,2.744-0.544c0.104-0.04,0.216-0.024,0.32-0.064l232-96  c2.984-1.232,4.936-4.152,4.936-7.392v-280C484.002,103.26,483.874,102.532,483.674,101.836z M244.002,16.66l211.08,87.344  l-211.08,87.344l-211.08-87.344L244.002,16.66z M20.002,115.972l216,89.376v262.68l-216-89.368V115.972z M468.002,378.66  l-216,89.376V205.348l216-89.376V378.66z"
+            />
+          </svg>
+        </a>
+      </div>
+      <div class="objects_panel-item -active" id="panel-pyramid">
+        <a href="">
+          <svg
+            id="Capa_1"
+            enable-background="new 0 0 512 512"
+            height="60px"
+            viewBox="0 0 512 512"
+            width="60px"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g>
+              <path
+                d="m259.75 400.73c-2.285 1.477-5.219 1.474-7.5 0l-197.676-130.06-51.556 70.507c-2.345 3.207-1.509 7.727 1.828 9.884l247.404 159.833c2.28 1.473 5.213 1.477 7.5 0l3.126-2.019v-110.164z"
+                fill="#23a8fe"
+              />
+              <g>
+                <path
+                  d="m109.424 306.758-54.85-36.088-51.556 70.507c-2.345 3.207-1.509 7.727 1.828 9.884l61.256 39.574z"
+                  fill="#0193fa"
+                />
+              </g>
+              <path
+                d="m256 401.837v110.163c1.304 0 2.608-.369 3.75-1.106l247.404-159.833c3.337-2.156 4.174-6.676 1.828-9.883l-50.89-69.596-198.342 129.148c-1.142.738-2.446 1.107-3.75 1.107z"
+                fill="#60b8fe"
+              />
+              <path
+                d="m259.75 290.567c-1.141.737-2.445 1.106-3.75 1.106-1.304 0-2.609-.369-3.75-1.106l-143.395-94.131-55.45 75.832 198.845 128.462c1.141.737 2.446 1.106 3.75 1.106s2.608-.369 3.75-1.106l3.126-2.019v-110.163z"
+                fill="#00ba66"
+              />
+              <path
+                d="m151.833 224.649-42.978-28.213-55.45 75.833 55.36 35.764z"
+                fill="#00a855"
+              />
+              <path
+                d="m403.313 196.666-143.563 93.901c-1.141.737-2.445 1.106-3.75 1.106v110.163c1.304 0 2.608-.369 3.75-1.106l198.845-128.462z"
+                fill="#43cb8e"
+              />
+              <path
+                d="m259.75 180.404c-1.141.737-2.445 1.106-3.75 1.106-1.304 0-2.609-.369-3.75-1.106l-88.978-58.387-55.158 75.433 144.136 93.118c1.141.737 2.446 1.106 3.75 1.106s2.608-.369 3.75-1.106l3.126-2.019v-110.164z"
+                fill="#ffd301"
+              />
+              <path
+                d="m194.319 142.39-31.047-20.374-55.158 75.433 43.314 27.983z"
+                fill="#ffc20c"
+              />
+              <path
+                d="m348.509 121.717-88.76 58.686c-1.141.737-2.445 1.106-3.75 1.106v110.163c1.304 0 2.608-.369 3.75-1.106l144.136-93.118z"
+                fill="#fee55a"
+              />
+              <path
+                d="m261.578 2.831c-1.38-1.888-3.479-2.831-5.578-2.831s-4.198.943-5.578 2.831l-87.599 119.799 89.427 57.774c1.141.737 2.446 1.106 3.75 1.106s2.608-.369 3.75-1.106l3.126-2.019v-173.78z"
+                fill="#ff4756"
+              />
+              <path
+                d="m262.875 9.657v-5.052l-1.297-1.774c-1.38-1.888-3.479-2.831-5.578-2.831s-4.198.943-5.578 2.831l-87.599 119.799 31.269 20.201z"
+                fill="#fc2d39"
+              />
+              <path
+                d="m256 0v181.51c1.304 0 2.608-.369 3.75-1.106l89.427-57.774-87.599-119.799c-1.38-1.888-3.479-2.831-5.578-2.831z"
+                fill="#ff656f"
+              />
+            </g>
+          </svg>
+        </a>
+      </div>
+      <div class="objects_panel-item" id="panel-sphere">
+        <a href="">
+          <svg
+            height="60px"
+            viewBox="0 0 496 496"
+            width="60px"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m248 160c-132.550781 0-240 39.398438-240 88 0 38.703125 82.449219 70.984375 192 78.398438-109.550781-7.414063-192-39.695313-192-78.398438 0 132.546875 107.453125 240 240 240s240-107.453125 240-240c0 38.703125-82.449219 70.984375-192 78.398438 109.550781-7.414063 192-39.695313 192-78.398438 0-48.601562-107.449219-88-240-88zm0 192c-13.253906 0-24-10.746094-24-24s10.746094-24 24-24 24 10.746094 24 24-10.746094 24-24 24zm0 0"
+              fill="#c2fb3b"
+            />
+            <path
+              d="m248 8c-132.546875 0-240 107.453125-240 240 0-48.601562 107.449219-88 240-88s240 39.398438 240 88c0-132.546875-107.453125-240-240-240zm0 56"
+              fill="#5f7c1d"
+            />
+            <path
+              d="m272 328c0 13.253906-10.746094 24-24 24s-24-10.746094-24-24 10.746094-24 24-24 24 10.746094 24 24zm0 0"
+              fill="#acabb1"
+            />
+            <path
+              d="m248 0c-136.964844 0-248 111.035156-248 248s111.035156 248 248 248 248-111.035156 248-248c-.15625-136.902344-111.097656-247.84375-248-248zm0 480c-114.839844-.148438-212.347656-84.175781-229.457031-197.734375 27.488281 24.445313 86.257812 45.734375 180.914062 52.132813h.542969c4.417969.148437 8.121094-3.3125 8.269531-7.730469.144531-4.417969-3.316406-8.121094-7.734375-8.269531-90.703125-6.125-184.535156-34.140626-184.535156-70.398438.152344-5.992188 2.101562-11.800781 5.601562-16.671875 2.460938-3.667969 1.484376-8.640625-2.1875-11.105469-.507812-.277344-1.042968-.503906-1.597656-.671875 14.300782-115.980469 112.660156-203.207031 229.519532-203.546875 116.859374-.339844 215.71875 86.316406 230.695312 202.210938-.851562.210937-1.664062.566406-2.398438 1.050781-3.601562 2.554687-4.453124 7.546875-1.898437 11.148437 3.882813 5.0625 6.074219 11.210938 6.265625 17.585938 0 36.257812-93.832031 64.273438-184.535156 70.398438-4.417969.148437-7.878906 3.851562-7.734375 8.269531.148437 4.417969 3.851562 7.878906 8.269531 7.730469h.542969c94.65625-6.398438 153.425781-27.6875 180.914062-52.132813-17.109375 113.558594-114.617187 197.585937-229.457031 197.734375zm0 0"
+            />
+            <path
+              d="m248 296c-17.671875 0-32 14.328125-32 32s14.328125 32 32 32 32-14.328125 32-32-14.328125-32-32-32zm0 48c-8.835938 0-16-7.164062-16-16s7.164062-16 16-16 16 7.164062 16 16-7.164062 16-16 16zm0 0"
+            />
+            <path
+              d="m345.246094 175.625c8 1.335938 15.792968 2.824219 23.203125 4.429688.558593.121093 1.128906.179687 1.703125.175781 4.082031-.011719 7.5-3.09375 7.929687-7.152344.429688-4.058594-2.261719-7.792969-6.25-8.664063-7.648437-1.652343-15.710937-3.199218-23.953125-4.574218-4.359375-.726563-8.480468 2.21875-9.207031 6.574218-.726563 4.359376 2.21875 8.484376 6.574219 9.210938zm0 0"
+            />
+            <path
+              d="m73.375 179.070312c-7.753906 2.894532-15.359375 6.1875-22.773438 9.867188-3.328124 1.65625-5.074218 5.382812-4.21875 9 .855469 3.613281 4.085938 6.164062 7.800782 6.160156 1.242187 0 2.46875-.292968 3.578125-.851562 6.917969-3.429688 14.011719-6.503906 21.246093-9.207032 2.808594-.898437 4.898438-3.269531 5.429688-6.171874.535156-2.902344-.574219-5.863282-2.878906-7.703126-2.308594-1.839843-5.441406-2.257812-8.152344-1.09375zm0 0"
+            />
+            <path
+              d="m415.800781 193.601562c7.253907 2.667969 14.367188 5.703126 21.3125 9.09375 3.964844 1.953126 8.761719.316407 10.710938-3.648437s.316406-8.761719-3.648438-10.710937c-7.4375-3.636719-15.058593-6.882813-22.832031-9.734376-2.703125-1.101562-5.792969-.640624-8.058594 1.203126-2.265625 1.839843-3.347656 4.769531-2.824218 7.640624.523437 2.871094 2.570312 5.230469 5.339843 6.15625zm0 0"
+            />
+            <path
+              d="m272.246094 168.449219c8 .292969 15.890625.734375 23.664062 1.328125h.609375c4.417969.164062 8.132813-3.285156 8.296875-7.707032.164063-4.417968-3.285156-8.128906-7.703125-8.292968-7.953125-.609375-16.046875-1.0625-24.28125-1.363282-2.132812-.128906-4.226562.625-5.792969 2.078126-1.566406 1.457031-2.46875 3.488281-2.496093 5.628906-.085938 2.125.675781 4.203125 2.121093 5.765625 1.445313 1.5625 3.457032 2.484375 5.582032 2.5625zm0 0"
+            />
+            <path
+              d="m230.136719 160.191406c-.027344-2.140625-.933594-4.175781-2.503907-5.628906-1.574218-1.453125-3.671874-2.195312-5.808593-2.050781-8.21875.320312-16.304688.789062-24.257813 1.410156-4.417968.164063-7.863281 3.878906-7.699218 8.296875.167968 4.417969 3.882812 7.867188 8.300781 7.703125h.617187c7.757813-.59375 15.648438-1.050781 23.671875-1.378906 2.128907-.082031 4.132813-1.011719 5.574219-2.578125s2.199219-3.644532 2.105469-5.773438zm0 0"
+            />
+            <path
+              d="m146.824219 160.0625c-8.199219 1.378906-16.273438 2.9375-24 4.640625-4.316407.957031-7.039063 5.226563-6.085938 9.539063.957031 4.316406 5.226563 7.039062 9.542969 6.085937 7.4375-1.648437 15.199219-3.160156 23.199219-4.488281 4.277343-.808594 7.125-4.890625 6.40625-9.183594-.722657-4.296875-4.746094-7.226562-9.054688-6.59375zm0 0"
+            />
+            <path
+              d="m248 288c4.417969 0 8-3.582031 8-8v-24c0-4.417969-3.582031-8-8-8s-8 3.582031-8 8v24c0 4.417969 3.582031 8 8 8zm0 0"
+            />
+            <path
+              d="m248 216c4.417969 0 8-3.582031 8-8v-24c0-4.417969-3.582031-8-8-8s-8 3.582031-8 8v24c0 4.417969 3.582031 8 8 8zm0 0"
+            />
+            <path
+              d="m248 144c4.417969 0 8-3.582031 8-8v-24c0-4.417969-3.582031-8-8-8s-8 3.582031-8 8v24c0 4.417969 3.582031 8 8 8zm0 0"
+            />
+            <path
+              d="m248 72c4.417969 0 8-3.582031 8-8v-24c0-4.417969-3.582031-8-8-8s-8 3.582031-8 8v24c0 4.417969 3.582031 8 8 8zm0 0"
+            />
+            <path
+              d="m256 472v-24c0-4.417969-3.582031-8-8-8s-8 3.582031-8 8v24c0 4.417969 3.582031 8 8 8s8-3.582031 8-8zm0 0"
+            />
+            <path
+              d="m248 368c-4.417969 0-8 3.582031-8 8v24c0 4.417969 3.582031 8 8 8s8-3.582031 8-8v-24c0-4.417969-3.582031-8-8-8zm0 0"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <script src="https://threejs.org/build/three.min.js"></script>
+    <!-- <script src="webgl.js"></script> -->
+
+    <script class="app">
+            
+            let camera, scene, renderer;
+            let plane, cube;
+            let mouse,
+              raycaster,
+              isShiftDown = false;
+
+            let rollOverMesh, rollOverMaterial;
+            let cubeGeo, cubeMaterial;
+
+            let objects = [];    
+            
+            let boxGeo = new THREE.BoxBufferGeometry(50, 50, 50);
+            let pyramidGeo = new THREE.ConeBufferGeometry(40, 70, 4);
+            let sphereGeo = new THREE.SphereBufferGeometry(50, 50, 50);
+            let toggleGeo ;
+
+            let toggleBox =  $('#panel-box');
+            let togglePyramid =  $('#panel-pyramid');
+            let toggleSphere =  $('#panel-sphere');
+
+            function boxHandler(){
+              toggleGeo = `${boxGeo}`;
+            }
+            console.log(toggleGeo);
+
+            function pyramidHandler(){
+              toggleGeo = `${pyramidGeo}`;
+            }
+            console.log(toggleGeo);
+
+            function sphereHandler(){
+              toggleGeo = `${sphereGeo}`;
+            }
+            console.log(toggleGeo)
+
+            
+            toggleBox.on('click', boxHandler);
+            togglePyramid.on('click', pyramidHandler);
+            toggleSphere.on('click', sphereHandler);
+                
+            
+            init();
+            render();
+
+            function init() {
+              camera = new THREE.PerspectiveCamera(
+                40,
+                window.innerWidth / window.innerHeight,
+                1,
+                10000
+              );
+              camera.position.set(500, 800, 1300);
+              camera.lookAt(0, 0, 0);
+
+              scene = new THREE.Scene();
+              scene.background = new THREE.Color(0xf0f0f0);
+                          
+
+              
+                // $('.objects_panel-item').on('click', function (e){
+                // e.preventDefault();
+                
+                // console.log($(this));
+                // let checkclass = this.className;
+                // let checkid = this.id;
+
+                // console.log(checkclass);
+                // console.log(checkid);
+                
+                //  if ((checkclass == "objects_panel-item -active") & (checkid == "panel-box")){
+                //   toggleGeo =  boxGeo;
+                //   }
+                //  else if ((checkclass == "objects_panel-item -active") & (checkid == "panel-pyramid")){
+                //   toggleGeo =  pyramidGeo;
+                //   }
+                //  else {
+                //   toggleGeo =  sphereGeo;
+                //   }
+                //   return(toggleGeo)                               
+                // });
+
+                
+
+
+              // roll-over helpers
+              
+              
+              let rollOverGeo = toggleGeo;
+              rollOverMaterial = new THREE.MeshBasicMaterial({
+                color: 0xff0000,
+                opacity: 0.5,
+                transparent: true,
+              });
+              rollOverMesh = new THREE.Mesh(rollOverGeo, rollOverMaterial);
+              scene.add(rollOverMesh);
+
+              // cubes
+
+              cubeGeo = toggleGeo;
+              cubeMaterial = new THREE.MeshLambertMaterial({
+                color: 0xfeb74c,
+                map: new THREE.TextureLoader().load(
+                  "https://cdn.glitch.com/7ee4d4ae-0b7f-4345-bd61-1c07abfd2888%2Fsquare-outline-textured.png?1542465490524"
+                ),
+              });
+
+              // grid
+
+              let gridHelper = new THREE.GridHelper(1000, 20);
+              scene.add(gridHelper);
+
+              //
+
+              raycaster = new THREE.Raycaster();
+              mouse = new THREE.Vector2();
+
+              let geometry = new THREE.PlaneBufferGeometry(1000, 1000);
+              geometry.rotateX(-Math.PI / 2);
+
+              plane = new THREE.Mesh(
+                geometry,
+                new THREE.MeshBasicMaterial({ visible: false })
+              );
+              scene.add(plane);
+
+              objects.push(plane);
+
+              // lights
+
+              let ambientLight = new THREE.AmbientLight(0x606060);
+              scene.add(ambientLight);
+
+              let directionalLight = new THREE.DirectionalLight(0xffffff);
+              directionalLight.position.set(1, 0.75, 0.5).normalize();
+              scene.add(directionalLight);
+
+              renderer = new THREE.WebGLRenderer({ antialias: true });
+              renderer.setPixelRatio(window.devicePixelRatio);
+              renderer.setSize(window.innerWidth, window.innerHeight);
+              document.body.appendChild(renderer.domElement);
+
+              document.addEventListener("mousemove", onDocumentMouseMove, false);
+              document.addEventListener("mousedown", onDocumentMouseDown, false);
+              // document.addEventListener( 'keydown', onDocumentKeyDown, false );
+              // document.addEventListener( 'keyup', onDocumentKeyUp, false );
+
+              //
+
+              window.addEventListener("resize", onWindowResize, false);
+            }
+
+            function onWindowResize() {
+              camera.aspect = window.innerWidth / window.innerHeight;
+              camera.updateProjectionMatrix();
+
+              renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            function onDocumentMouseMove(event) {
+              event.preventDefault();
+
+              mouse.set(
+                (event.clientX / window.innerWidth) * 2 - 1,
+                -(event.clientY / window.innerHeight) * 2 + 1
+              );
+
+              raycaster.setFromCamera(mouse, camera);
+
+              let intersects = raycaster.intersectObjects(objects);
+
+              if (intersects.length > 0) {
+                let intersect = intersects[0];
+
+                rollOverMesh.position
+                  .copy(intersect.point)
+                  .add(intersect.face.normal);
+                rollOverMesh.position
+                  .divideScalar(50)
+                  .floor()
+                  .multiplyScalar(50)
+                  .addScalar(25);
+              }
+
+              render();
+            }
+
+            function onDocumentMouseDown(event) {
+              event.preventDefault();
+
+              mouse.set(
+                (event.clientX / window.innerWidth) * 2 - 1,
+                -(event.clientY / window.innerHeight) * 2 + 1
+              );
+
+              raycaster.setFromCamera(mouse, camera);
+
+              let intersects = raycaster.intersectObjects(objects);
+
+              if (intersects.length > 0) {
+                let intersect = intersects[0];
+
+                // delete cube
+
+                if (isShiftDown) {
+                  if (intersect.object !== plane) {
+                    scene.remove(intersect.object);
+
+                    objects.splice(objects.indexOf(intersect.object), 1);
+                  }
+
+                  // create cube
+                } else {
+                  let voxel = new THREE.Mesh(cubeGeo, cubeMaterial);
+                  voxel.position.copy(intersect.point).add(intersect.face.normal);
+                  voxel.position
+                    .divideScalar(50)
+                    .floor()
+                    .multiplyScalar(50)
+                    .addScalar(25);
+                  scene.add(voxel);
+
+                  objects.push(voxel);
+                }
+
+                render();
+              }
+            }
+
+            
+
+            function render() {
+              renderer.render(scene, camera);
+            }
+    </script>
+
+    
+    
+  </body>
+</html>
