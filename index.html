@@ -273,10 +273,7 @@
                   "https://cdn.glitch.com/7ee4d4ae-0b7f-4345-bd61-1c07abfd2888%2Fsquare-outline-textured.png?1542465490524"
                 ),
               });
-                      // roll-over helpers
-
-
-
+           
               // grid
 
               let gridHelper = new THREE.GridHelper(1000, 20);
@@ -314,28 +311,9 @@
 
               document.addEventListener("mousemove", onDocumentMouseMove, false);
               document.addEventListener("mousedown", onDocumentMouseDown, false);
-              // document.addEventListener( 'keydown', onDocumentKeyDown, false );
-              // document.addEventListener( 'keyup', onDocumentKeyUp, false );
-
-              //
-
+           
               window.addEventListener("resize", onWindowResize, false);
             }
-
-              // $(".objects_panel-item").on("click", function (e) {
-                //   e.preventDefault();
-                //   console.log(this.id);
-                //   if (this.id == "panel-box") {
-                //     initB();
-
-                //   } else if (this.id == "panel-pyramid") {
-                //     initP();
-
-                //   } else if (this.id == "panel-sphere") {
-                //     initS();
-
-                //   }
-                // });
 
               function rollCheck (){
               let boxGeo = new THREE.BoxBufferGeometry(50, 50, 50);
@@ -382,7 +360,6 @@
                });
             
 
-
             function onWindowResize() {
               camera.aspect = window.innerWidth / window.innerHeight;
               camera.updateProjectionMatrix();
@@ -413,19 +390,14 @@
               
               if (chekGeoId == "panel-box"){
 
-                // rollOverMesh = new THREE.Mesh(boxGeo, rollOverMaterial);
                 cubeGeo = boxGeo;
-
               }
               else if (chekGeoId == "panel-pyramid"){
 
-                // rollOverMesh = new THREE.Mesh(pyramidGeo, rollOverMaterial);
                 cubeGeo = pyramidGeo;
-
               }
               else if (chekGeoId == "panel-sphere"){
 
-                // rollOverMesh = new THREE.Mesh(sphereGeo, rollOverMaterial);
                 cubeGeo = sphereGeo;
 
               }
