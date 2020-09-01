@@ -50,7 +50,7 @@
   </head>
   <body>
     <div class="objects_panel">
-      <div class="objects_panel-item" id="panel-box">
+      <div class="objects_panel-item --active" id="panel-box">
         <a href="">
           <svg
             version="1.1"
@@ -218,266 +218,286 @@
     <!-- <script src="webgl.js"></script> -->
 
     <script class="app">
-      let camera, scene, renderer;
-      let plane, cube;
-      let mouse,
-        raycaster,
-        isShiftDown = false;
+            let camera, scene, renderer;
+            let plane, cube;
+            let mouse,
+              raycaster,
+              isShiftDown = false;
 
-      let rollOverMesh, rollOverMaterial;
-      let cubeGeo, cubeMaterial;
+            let rollOverMesh, rollOverMaterial;
+            let cubeGeo, cubeMaterial;
 
-      let objects = [];
+            let objects = [];
 
 
-      init();
-      render();
 
-      function init() {
-        camera = new THREE.PerspectiveCamera(
-          40,
-          window.innerWidth / window.innerHeight,
-          1,
-          10000
-        );
-        camera.position.set(500, 800, 1300);
-        camera.lookAt(0, 0, 0);
 
-        scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xf0f0f0);
+            init();
+            rollCheck ();
+            render();
 
-        // $('.objects_panel-item').on('click', function (e){
-        // e.preventDefault();
+            function init() {
+              camera = new THREE.PerspectiveCamera(
+                40,
+                window.innerWidth / window.innerHeight,
+                1,
+                10000
+              );
+              camera.position.set(500, 800, 1300);
+              camera.lookAt(0, 0, 0);
 
-        // console.log($(this));
-        // let checkclass = this.className;
-        // let checkid = this.id;
+              scene = new THREE.Scene();
+              scene.background = new THREE.Color(0xf0f0f0);
 
-        // console.log(checkclass);
-        // console.log(checkid);
 
-        //  if ((checkclass == "objects_panel-item -active") & (checkid == "panel-box")){
-        //   toggleGeo =  boxGeo;
-        //   }
-        //  else if ((checkclass == "objects_panel-item -active") & (checkid == "panel-pyramid")){
-        //   toggleGeo =  pyramidGeo;
-        //   }
-        //  else {
-        //   toggleGeo =  sphereGeo;
-        //   }
-        //   return(toggleGeo)
-        // });
+              let boxGeo = new THREE.BoxBufferGeometry(50, 50, 50);
+              let pyramidGeo = new THREE.ConeBufferGeometry(40, 70, 4);
+              let sphereGeo = new THREE.SphereBufferGeometry(50, 50, 50);
+              let toggleGeo;
 
-        let boxGeo = new THREE.BoxBufferGeometry(50, 50, 50);
-        let pyramidGeo = new THREE.ConeBufferGeometry(40, 70, 4);
-        let sphereGeo = new THREE.SphereBufferGeometry(50, 50, 50);
-        let toggleGeo;
+              let rollOverGeo;
+              rollOverMaterial = new THREE.MeshBasicMaterial({
+                color: 0xff0000,
+                opacity: 0.5,
+                transparent: true,
+              });
+              rollOverMesh = new THREE.Mesh(rollOverGeo, rollOverMaterial);
+              // scene.add(rollOverMesh);
 
-        // let checkGeo = $(".objects_panel-item");
-        // console.log(checkGeo);
-        // console.log(checkGeo[0].id);
-        // if (checkGeo.id == "panel-box"){
-        //   toggleGeo =  boxGeo;
-        // }
-        // else if (checkGeo.id == "panel-pyramid"){
-        //   toggleGeo =  pyramidGeo;
-        // }
-        // else {
-        //   toggleGeo =  sphereGeo;
 
-        // }
+              // cubes
+              cubeGeo = pyramidGeo;
+              cubeMaterial = new THREE.MeshLambertMaterial({
+                color: 0xfeb74c,
+                map: new THREE.TextureLoader().load(
+                  "https://cdn.glitch.com/7ee4d4ae-0b7f-4345-bd61-1c07abfd2888%2Fsquare-outline-textured.png?1542465490524"
+                ),
+              });
+                      // roll-over helpers
 
-        let boxGeo = new THREE.BoxBufferGeometry(50, 50, 50);
-        let pyramidGeo = new THREE.ConeBufferGeometry(40, 70, 4);
-        let sphereGeo = new THREE.SphereBufferGeometry(50, 50, 50);
-        let toggleGeo;
-        
-          $(".objects_panel-item").on("click", function (e) {
-            e.preventDefault();
-            console.log(this.id);
-            if (this.id == "panel-box") {
-              toggleGeo = boxGeo;
-            } else if (this.id == "panel-pyramid") {
-              toggleGeo = pyramidGeo;
-            } else if (this.id == "panel-sphere") {
-              toggleGeo = sphereGeo;
-            }
-          });
-        
-        console.log(toggleGeo);//undefined
 
-        // let toggleItem = $(".objects_panel-item.-active");
-        // console.log(toggleItem);
-        // console.log(toggleItem[0].id);
-        // let togglePyramid = $("#panel-pyramid");
-        // let toggleSphere = $("#panel-sphere");
 
-        // if (toggleItem[0].id == "panel-box") {
-        //   toggleGeo = boxGeo;
-        // } else if (toggleItem[0].id == "panel-pyramid") {
-        //   toggleGeo = pyramidGeo;
-        // } else if (toggleItem[0].id == "panel-sphere") {
-        //   toggleGeo = sphereGeo;
-        // }
+              // grid
 
-        // toggleBox.on("click", function () {
-        //   toggleGeo = boxGeo;
-        // });
+              let gridHelper = new THREE.GridHelper(1000, 20);
+              scene.add(gridHelper);
 
-        // togglePyramid.on("click", function () {
-        //   toggleGeo = pyramidGeo;
-        // });
+              //
 
-        // toggleSphere.on("click", function () {
-        //   toggleGeo = sphereGeo;
-        // });
+              raycaster = new THREE.Raycaster();
+              mouse = new THREE.Vector2();
 
-        // roll-over helpers
+              let geometry = new THREE.PlaneBufferGeometry(1000, 1000);
+              geometry.rotateX(-Math.PI / 2);
 
-        let rollOverGeo = toggleGeo;
-        rollOverMaterial = new THREE.MeshBasicMaterial({
-          color: 0xff0000,
-          opacity: 0.5,
-          transparent: true,
-        });
-        rollOverMesh = new THREE.Mesh(rollOverGeo, rollOverMaterial);
-        scene.add(rollOverMesh);
+              plane = new THREE.Mesh(
+                geometry,
+                new THREE.MeshBasicMaterial({ visible: false })
+              );
+              scene.add(plane);
 
-        // cubes
+              objects.push(plane);
 
-        cubeGeo = toggleGeo;
-        cubeMaterial = new THREE.MeshLambertMaterial({
-          color: 0xfeb74c,
-          map: new THREE.TextureLoader().load(
-            "https://cdn.glitch.com/7ee4d4ae-0b7f-4345-bd61-1c07abfd2888%2Fsquare-outline-textured.png?1542465490524"
-          ),
-        });
+              // lights
 
-        // grid
+              let ambientLight = new THREE.AmbientLight(0x606060);
+              scene.add(ambientLight);
 
-        let gridHelper = new THREE.GridHelper(1000, 20);
-        scene.add(gridHelper);
+              let directionalLight = new THREE.DirectionalLight(0xffffff);
+              directionalLight.position.set(1, 0.75, 0.5).normalize();
+              scene.add(directionalLight);
 
-        //
+              renderer = new THREE.WebGLRenderer({ antialias: true });
+              renderer.setPixelRatio(window.devicePixelRatio);
+              renderer.setSize(window.innerWidth, window.innerHeight);
+              document.body.appendChild(renderer.domElement);
 
-        raycaster = new THREE.Raycaster();
-        mouse = new THREE.Vector2();
+              document.addEventListener("mousemove", onDocumentMouseMove, false);
+              document.addEventListener("mousedown", onDocumentMouseDown, false);
+              // document.addEventListener( 'keydown', onDocumentKeyDown, false );
+              // document.addEventListener( 'keyup', onDocumentKeyUp, false );
 
-        let geometry = new THREE.PlaneBufferGeometry(1000, 1000);
-        geometry.rotateX(-Math.PI / 2);
+              //
 
-        plane = new THREE.Mesh(
-          geometry,
-          new THREE.MeshBasicMaterial({ visible: false })
-        );
-        scene.add(plane);
-
-        objects.push(plane);
-
-        // lights
-
-        let ambientLight = new THREE.AmbientLight(0x606060);
-        scene.add(ambientLight);
-
-        let directionalLight = new THREE.DirectionalLight(0xffffff);
-        directionalLight.position.set(1, 0.75, 0.5).normalize();
-        scene.add(directionalLight);
-
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-
-        document.addEventListener("mousemove", onDocumentMouseMove, false);
-        document.addEventListener("mousedown", onDocumentMouseDown, false);
-        // document.addEventListener( 'keydown', onDocumentKeyDown, false );
-        // document.addEventListener( 'keyup', onDocumentKeyUp, false );
-
-        //
-
-        window.addEventListener("resize", onWindowResize, false);
-      }
-
-      function onWindowResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      }
-
-      function onDocumentMouseMove(event) {
-        event.preventDefault();
-
-        mouse.set(
-          (event.clientX / window.innerWidth) * 2 - 1,
-          -(event.clientY / window.innerHeight) * 2 + 1
-        );
-
-        raycaster.setFromCamera(mouse, camera);
-
-        let intersects = raycaster.intersectObjects(objects);
-
-        if (intersects.length > 0) {
-          let intersect = intersects[0];
-
-          rollOverMesh.position
-            .copy(intersect.point)
-            .add(intersect.face.normal);
-          rollOverMesh.position
-            .divideScalar(50)
-            .floor()
-            .multiplyScalar(50)
-            .addScalar(25);
-        }
-
-        render();
-      }
-
-      function onDocumentMouseDown(event) {
-        event.preventDefault();
-
-        mouse.set(
-          (event.clientX / window.innerWidth) * 2 - 1,
-          -(event.clientY / window.innerHeight) * 2 + 1
-        );
-
-        raycaster.setFromCamera(mouse, camera);
-
-        let intersects = raycaster.intersectObjects(objects);
-
-        if (intersects.length > 0) {
-          let intersect = intersects[0];
-
-          // delete cube
-
-          if (isShiftDown) {
-            if (intersect.object !== plane) {
-              scene.remove(intersect.object);
-
-              objects.splice(objects.indexOf(intersect.object), 1);
+              window.addEventListener("resize", onWindowResize, false);
             }
 
-            // create cube
-          } else {
-            let voxel = new THREE.Mesh(cubeGeo, cubeMaterial);
-            voxel.position.copy(intersect.point).add(intersect.face.normal);
-            voxel.position
-              .divideScalar(50)
-              .floor()
-              .multiplyScalar(50)
-              .addScalar(25);
-            scene.add(voxel);
+              // $(".objects_panel-item").on("click", function (e) {
+                //   e.preventDefault();
+                //   console.log(this.id);
+                //   if (this.id == "panel-box") {
+                //     initB();
 
-            objects.push(voxel);
-          }
+                //   } else if (this.id == "panel-pyramid") {
+                //     initP();
 
-          render();
-        }
-      }
+                //   } else if (this.id == "panel-sphere") {
+                //     initS();
 
-      function render() {
-        renderer.render(scene, camera);
-      }
+                //   }
+                // });
+
+              function rollCheck (){
+              let boxGeo = new THREE.BoxBufferGeometry(50, 50, 50);
+              let pyramidGeo = new THREE.ConeBufferGeometry(40, 70, 4);
+              let sphereGeo = new THREE.SphereBufferGeometry(50, 50, 50);
+              let toggleGeo;
+
+              let rollCheckGeo = $(".objects_panel-item.--active");
+              // console.log(rollCheckGeo);
+              let rollChekGeoId = rollCheckGeo[0].id;
+              // console.log(rollChekGeoId);
+              if (rollChekGeoId == "panel-box"){
+                toggleGeo = boxGeo;
+              }
+              else if (rollChekGeoId == "panel-pyramid"){
+                toggleGeo = pyramidGeo;
+              }
+              else if (rollChekGeoId == "panel-sphere"){
+                toggleGeo = sphereGeo;
+              }
+              else {
+                toggleGeo = boxGeo;
+              }
+
+              let rollOverGeo = toggleGeo ;
+              rollOverMaterial = new THREE.MeshBasicMaterial({
+                color: 0xff0000,
+                opacity: 0.5,
+                transparent: true,
+              });
+              rollOverMesh = new THREE.Mesh(rollOverGeo, rollOverMaterial);
+              scene.add(rollOverMesh);
+            }
+
+             let objectsItemCheck = $('.objects_panel-item');
+             objectsItemCheck.on('click', function(e){
+               e.preventDefault();
+               
+               console.log(this);
+               
+               objectsItemCheck.not(this).removeClass('--active')
+	            $(this).addClass('--active');
+               rollCheck ();
+               });
+            
+
+
+            function onWindowResize() {
+              camera.aspect = window.innerWidth / window.innerHeight;
+              camera.updateProjectionMatrix();
+
+              renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+            
+
+            function onDocumentMouseMove(event) {
+              event.preventDefault();
+
+              mouse.set(
+                (event.clientX / window.innerWidth) * 2 - 1,
+                -(event.clientY / window.innerHeight) * 2 + 1
+              );
+
+              raycaster.setFromCamera(mouse, camera);
+
+              let boxGeo = new THREE.BoxBufferGeometry(50, 50, 50);
+              let pyramidGeo = new THREE.ConeBufferGeometry(40, 70, 4);
+              let sphereGeo = new THREE.SphereBufferGeometry(50, 50, 50);
+              let toggleGeo;
+
+              let intersects = raycaster.intersectObjects(objects);
+              let checkGeo = $(".objects_panel-item.--active");
+              
+              let chekGeoId = checkGeo[0].id;
+              
+              if (chekGeoId == "panel-box"){
+
+                // rollOverMesh = new THREE.Mesh(boxGeo, rollOverMaterial);
+                cubeGeo = boxGeo;
+
+              }
+              else if (chekGeoId == "panel-pyramid"){
+
+                // rollOverMesh = new THREE.Mesh(pyramidGeo, rollOverMaterial);
+                cubeGeo = pyramidGeo;
+
+              }
+              else if (chekGeoId == "panel-sphere"){
+
+                // rollOverMesh = new THREE.Mesh(sphereGeo, rollOverMaterial);
+                cubeGeo = sphereGeo;
+
+              }
+              else {
+                cubeGeo = boxGeo;
+              }
+
+      
+
+
+              if (intersects.length > 0) {
+                let intersect = intersects[0];
+
+
+                rollOverMesh.position
+                  .copy(intersect.point)
+                  .add(intersect.face.normal);
+                rollOverMesh.position
+                  .divideScalar(50)
+                  .floor()
+                  .multiplyScalar(50)
+                  .addScalar(25);
+              }
+
+              render();
+            }
+
+            function onDocumentMouseDown(event) {
+              event.preventDefault();
+
+              mouse.set(
+                (event.clientX / window.innerWidth) * 2 - 1,
+                -(event.clientY / window.innerHeight) * 2 + 1
+              );
+
+              raycaster.setFromCamera(mouse, camera);
+
+              let intersects = raycaster.intersectObjects(objects);
+
+              if (intersects.length > 0) {
+                let intersect = intersects[0];
+
+                // delete cube
+
+                if (isShiftDown) {
+                  if (intersect.object !== plane) {
+                    scene.remove(intersect.object);
+
+                    objects.splice(objects.indexOf(intersect.object), 1);
+                  }
+
+                  // create cube
+                } else {
+                  let voxel = new THREE.Mesh(cubeGeo, cubeMaterial);
+                  voxel.position.copy(intersect.point).add(intersect.face.normal);
+                  voxel.position
+                    .divideScalar(50)
+                    .floor()
+                    .multiplyScalar(50)
+                    .addScalar(25);
+                  scene.add(voxel);
+
+                  objects.push(voxel);
+                }
+
+                render();
+              }
+            }
+
+            function render() {
+              renderer.render(scene, camera);
+            }
     </script>
   </body>
 </html>
